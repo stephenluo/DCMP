@@ -1,0 +1,211 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="gbk">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> -->
+    <title>主页</title>
+
+    <link href="../../Content/page.css" rel="stylesheet" />
+    <link href="../../Content/bootstrap.min.css" rel="stylesheet">
+    <script src="../../Scripts/jquery-1.10.2.js"></script>
+    <script src="../../Scripts/bootstrap.min.js"></script>
+
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript">
+
+			$(window).load(function() {
+				$('#liOutline').addClass("active");
+				$('#liOutline').siblings().removeClass("active");
+
+				$('#rightBlock div').eq(0).show();
+				$('#rightBlock div:not(:eq(0))').hide();
+
+				getHouseList();
+			});
+
+			$(function () {
+
+				$('#houseList').click(function() {
+					$(this).parent().addClass("active");
+					$(this).parent().siblings().removeClass("active");
+
+					$('#rightBlock div').eq(0).show();
+					$('#rightBlock div:not(:eq(0))').hide();
+
+					getHouseList();
+				});
+
+				$('#li2').click(function() {
+					$(this).parent().addClass("active");
+					$(this).parent().siblings().removeClass("active");
+
+					$('#rightBlock div').eq(1).show();
+					$('#rightBlock div:not(:eq(1))').hide();
+				});
+				$('#li3').click(function() {
+					$(this).parent().addClass("active");
+					$(this).parent().siblings().removeClass("active");
+
+					$('#rightBlock div').eq(2).show();
+					$('#rightBlock div:not(:eq(2))').hide();
+				});
+
+			});
+
+			function getHouseList()
+			{
+				$.getJSON('http://172.28.70.71:81/api/MonitoringOverview', function(data){
+
+					//var html = '<table style="font-family: 微软雅黑;"><th class="w80 bgGray">渠道大类</th><th class="w80 bgGray">渠道小类</th><th class="w80 bgGray">采集方式</th><th class="w150 bgGray">数据大类</th>' 
+					//		 + '<th class="w80 bgGray">状态</th><th class="w150 bgGray">数据量</th><th class="w150 bgGray">近一个月更新量</th>';  
+
+					var html = '';
+					$.each(data, function(entryIndex, entry){
+
+						if(entry.Values.length > 1)
+						{
+							html += '<tr><td class="ac" rowspan =" ' + entry.Values.length+ ' ">'+entry.ChannelCategories+'</td>';
+
+							for(var i=0; i < entry.Values.length;i++)
+							{
+								var content = entry.Values[i];
+								if(i > 0)
+								{
+									html += '<tr>';
+								}
+								html += '<td>'+ content.ChannelSubclasses + '</td>'
+									 +	'<td>'+ content.AcquisitionMode + '</td>'
+									 +	'<td>'+ content.DataCategories + '</td>'
+									 +	((content.State == "正常") ? '<td class="bdGreen ac">'+ content.State + '</td>' : '<td class="bdYellow ac">'+ content.State + '</td>')
+									 +	'<td class="ar">'+ content.AmountOfData + '</td>'
+									 +	'<td class="ar">'+ content.PastMonthUpdateAmount + '</td>';
+								html += '</tr>';
+							}
+						}else
+						{
+							html += '<tr><td class="ac">'+entry.ChannelCategories+'</td>';
+							var content = entry.Values[0];
+							html += '<td>'+ content.ChannelSubclasses + '</td>'
+								 + '<td>'+ content.AcquisitionMode + '</td>'
+								 + '<td>'+ content.DataCategories + '</td>'
+								 +	((content.State == "正常") ? '<td class="bdGreen ac">'+ content.State + '</td>' : '<td class="bdYellow ac">'+ content.State + '</td>')
+								 + '<td class="ar">'+ content.AmountOfData + '</td>'
+								 + '<td class="ar">'+ content.PastMonthUpdateAmount + '</td>';
+						}
+						html += '</tr>';
+					});
+					html += '</table>';
+					$("#tbContent").html(html);
+					return false;
+			   });
+			}
+    </script>
+
+</head>
+<body>
+
+
+
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <nav class="navbar navbar-inverse" style="">
+                    <div class="container-fluid">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <a class="navbar-brand" href="#">主标题</a>
+                        </div>
+                        <div id="navbar" class="navbar-collapse collapse">
+                            <ul class="nav navbar-nav navbar-right">
+                                <!-- 				<li><a href="#">菜单一</a></li>
+                                                <li><a href="#">菜单二</a></li>
+                                                <li><a href="#">菜单三</a></li> -->
+                                <!-- <li><a href="#">菜单四</a></li> -->
+                            </ul>
+                            <form class="navbar-form navbar-right">
+                                <!-- <input type="text" class="form-control" placeholder="Search..."> -->
+                            </form>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-md-2 column">
+                <ul class="nav nav-stacked nav-pills">
+                    <li class="" id="liOutline">
+                        <a href="#" id='houseList'>概览</a>
+                    </li>
+                    <li>
+                        <a href="#" id='li2'>交易数据</a>
+                    </li>
+                    <li class="">
+                        <a href="#" id='li3'>挂牌数据</a>
+                    </li>
+                </ul>
+            </div>
+
+
+            <div id="rightBlock" class="col-md-10 column">
+                <div id="divMenu1">
+                    <h2 class="sub-header">Section title</h2>
+                    <table class="table table-hover table-condensed table-striped">
+                        <thead>
+                            <tr>
+                                <th class="ac w80 bgGray">
+                                    渠道大类
+                                </th>
+                                <th class="ac w80 bgGray">
+                                    渠道小类
+                                </th>
+                                <th class="ac w80 bgGray">
+                                    采集方式
+                                </th>
+                                <th class="ac w120 bgGray">
+                                    数据大类
+                                </th>
+                                <th class="ac w80 bgGray">
+                                    状态
+                                </th>
+                                <th class="ac w150 bgGray">
+                                    数据量
+                                </th>
+                                <th class="ac w150 bgGray">
+                                    近一个月更新量
+                                </th>
+                            </tr>
+                            <!-- var html = '<table style="font-family: 微软雅黑;"> -->
+                        </thead>
+                        <tbody id="tbContent"></tbody>
+                    </table>
+                </div>
+
+                <div id="divMenu2">
+                    菜单2内容
+                </div>
+                <div id="divMenu3">
+                    菜单3内容
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+</body>
+</html>
